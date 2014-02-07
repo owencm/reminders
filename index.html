@@ -31,6 +31,9 @@
 				font-size: 0.9em;
 				padding: 10px;
 			}
+			.card .card-action:hover {
+				background-color: #f8f8f8;
+			}
 			.card .menu {
 				background-image: url('dropdown.png');
 				background-size: 6px 17px;
@@ -54,6 +57,51 @@
 				height: 1px;
 				background-color: #eee;
 			}
+
+			#add-button {
+				position: fixed;
+				bottom: 15px;
+				right: 15px;
+				background-image: url('add.png');
+				background-repeat: no-repeat;
+				background-position: center; 
+				background-color: #57f;
+				height: 60px;
+				width: 60px;
+				border-radius: 30px;
+				box-shadow: 0 2px 1px 0 #bbb;
+			}
+
+			.android-input-right {
+				display:inline-block;
+				height:7px;
+				border-left:1px solid #ccc;
+				border-right: 1px solid #ccc;
+				position:absolute;
+				margin-top:23px;
+				margin-left:-260px;
+				width:258px;
+				pointer-events: none;
+			}
+
+			.android-input {
+				background-color:rgba(0,0,0,0);
+				display:inline-block;
+				height:30px;
+				font-size:16px;
+				width:250px;
+				border:1px solid  #ccc;
+				border-width:0px 0px 1px 0px;
+				padding:0px 5px;  
+				outline:none;
+			}
+
+			.android-input:hover, .android-input:focus,
+			.android-input:hover + .android-input-right,
+			.android-input:focus + .android-input-right {
+				border-color:#4ab5d9;
+			}
+
 		</style>
 		<link rel='stylesheet' type='text/css' href='reset.css' />
 		<meta name='viewport' content='width=device-width, user-scalable=no'>
@@ -63,11 +111,35 @@
 		<script type='text/javascript' src='backbone.localStorage.js'></script>
 	</head>
 	<body>
-		<input type='text' id='titleInput'></input><input type='submit' id='submitButton'></input>
+		<input type='text' id='titleInput' placeholder='Buy flowers for Mom' class='android-input'></input>
+		<div class='android-input-right'></div>
+		<input type='submit' id='submitButton'></input>
 
 		<div id='cards'></div>
 
-		<template id='card'>
+		<div id='add-button'></div>
+
+		<template id='edit-card-template'>
+			<div class='card-container'>
+				<div class='card'>
+					<div class='card-content-padder'>
+						<div class='title'>
+						</div>
+						<div class='last-done'>
+						</div>
+					</div>
+					<div class='divider'></div>
+					<div class='card-action'>
+						Done
+					</div>
+					<div class='card-action'>
+						Cancel
+					</div>
+				</div>
+			</div>			
+		</template>
+
+		<template id='card-template'>
 			<div class='card-container'>
 				<div class='card'>
 					<div class='card-content-padder'>
@@ -113,7 +185,7 @@
 				render: function (event) {
 					document.querySelector('#cards').innerHTML = '';
 					_.each(this.model.models, function (action) {
-						var template = document.querySelector('template');
+						var template = document.querySelector('#card-template');
 						var titleElem = template.content.querySelector('.title');
 						titleElem.innerHTML = action.get('title');
 						var lastDoneElem = template.content.querySelector('.last-done');
@@ -125,12 +197,12 @@
 			});
 
 			var actionCollection = new ActionCollection();
-	        actionCollection.fetch({
-            	success:function () {
-                	actionListView = new ActionListView({model:actionCollection});
-                	actionListView.render();
-            	}
-        	});
+			actionCollection.fetch({
+				success:function () {
+					actionListView = new ActionListView({model:actionCollection});
+					actionListView.render();
+				}
+			});
 			document.querySelector('#submitButton').onclick = function() {
 				var title = document.querySelector('#titleInput').value;
 				var a = new Action({title: title});
