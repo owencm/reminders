@@ -16,14 +16,43 @@
 				padding: 0 10px 0 10px;
 			}
 			.card {
+				position: relative;
 				background-color: white;
-				border-radius: 1px;
-				border-bottom: 1px solid #ddd;
+				border-radius: 2px;
+				box-shadow: 0 2px 0 0 #ddd;
 				font-family: sans-serif;
 				font-weight: lighter;
-				font-size: 1.2em;
-				color: #888;
+			}
+			.card .card-content-padder {
+				padding: 15px 20px 15px 15px;
+			}
+			.card .card-action {
+				color: #57f;
+				font-size: 0.9em;
 				padding: 10px;
+			}
+			.card .menu {
+				background-image: url('dropdown.png');
+				background-size: 6px 17px;
+				width: 6px;
+				height: 17px;
+				position: absolute;
+				top: 10px;
+				right: 5px;
+			}
+			.card .title {
+				color: #888;
+				font-size: 1.25em;
+				line-height: 1.25em;
+				margin-bottom: 5px;
+			}
+			.card .last-done {
+				color: #bbb;
+				font-size: 0.8em;
+			}
+			.card .divider {
+				height: 1px;
+				background-color: #eee;
 			}
 		</style>
 		<link rel='stylesheet' type='text/css' href='reset.css' />
@@ -34,15 +63,25 @@
 		<script type='text/javascript' src='backbone.localStorage.js'></script>
 	</head>
 	<body>
-		<input type='text' id='input'></input><input type='submit' id='submitButton'></input>
-		<p id='text'></p>
+		<input type='text' id='titleInput'></input><input type='submit' id='submitButton'></input>
 
 		<div id='cards'></div>
 
 		<template id='card'>
 			<div class='card-container'>
-				<div class='card text'>
-
+				<div class='card'>
+					<div class='card-content-padder'>
+						<div class='menu'>
+						</div>
+						<div class='title'>
+						</div>
+						<div class='last-done'>
+						</div>
+					</div>
+					<div class='divider'></div>
+					<div class='card-action'>
+						Done
+					</div>
 				</div>
 			</div>
 		</template>
@@ -51,7 +90,13 @@
 			// Models
 			var Action = Backbone.Model.extend({
 				defaults: {
-					'text': ''
+					'title': '',
+					'lastDone': (new Date).getTime()
+				},
+				lastDoneDays: function () {
+					var milliSince = (new Date).getTime() - this.get('lastDone');
+					// Todo: check this should be a floor
+					return Math.floor(milliSince/86400000);
 				}
 			});
 			var ActionCollection = Backbone.Collection.extend({
@@ -69,9 +114,10 @@
 					document.querySelector('#cards').innerHTML = '';
 					_.each(this.model.models, function (action) {
 						var template = document.querySelector('template');
-						var textElement = template.content.querySelector('.text');
-						textElement.id = 'card-' + action.cid + '-text';
-						textElement.innerHTML = action.get('text');
+						var titleElem = template.content.querySelector('.title');
+						titleElem.innerHTML = action.get('title');
+						var lastDoneElem = template.content.querySelector('.last-done');
+						lastDoneElem.innerHTML = action.lastDoneDays() + ' days ago';
 						var instance = template.content.cloneNode(true);
 						document.querySelector('#cards').appendChild(instance);
 					});
@@ -86,8 +132,8 @@
             	}
         	});
 			document.querySelector('#submitButton').onclick = function() {
-				var text = document.querySelector('#input').value;
-				var a = new Action({text: text});
+				var title = document.querySelector('#titleInput').value;
+				var a = new Action({title: title});
 				actionCollection.create(a);
 			}
 		</script>
