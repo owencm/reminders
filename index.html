@@ -26,12 +26,18 @@
 				padding: 10px;
 			}
 		</style>
-		<link rel="stylesheet" type="text/css" href='reset.css' />
-		<meta name="viewport" content="width=device-width, user-scalable=no">
+		<link rel='stylesheet' type='text/css' href='reset.css' />
+		<meta name='viewport' content='width=device-width, user-scalable=no'>
+		<script type='text/javascript' src='jquery-2.1.0.js'></script>
+		<script type='text/javascript' src='underscore.js'></script>
+		<script type='text/javascript' src='backbone.js'></script>
+		<script type='text/javascript' src='backbone.localStorage.js'></script>
 	</head>
 	<body>
 		<input type='text' id='input'></input><input type='submit' id='submitButton'></input>
 		<p id='text'></p>
+
+		<div id='cards'></div>
 
 		<template id='card'>
 			<div class='card-container'>
@@ -42,7 +48,48 @@
 		</template>
 
 		<script type='text/javascript'>
-			
+			// Models
+			var Action = Backbone.Model.extend({
+				defaults: {
+					'text': ''
+				}
+			});
+			var ActionCollection = Backbone.Collection.extend({
+				model: Action,
+				localStorage: new Backbone.LocalStorage('ActionCollection'), 
+			});
+			// Views
+			ActionListView = Backbone.View.extend({
+				initialize: function () {
+					this.model.bind('reset', this.render, this);
+					// TODO: only render the new one by rendering a subview and appending it to this
+					this.model.bind('add', this.render, this);
+				},
+				render: function (event) {
+					document.querySelector('#cards').innerHTML = '';
+					_.each(this.model.models, function (action) {
+						var template = document.querySelector('template');
+						var textElement = template.content.querySelector('.text');
+						textElement.id = 'card-' + action.cid + '-text';
+						textElement.innerHTML = action.get('text');
+						var instance = template.content.cloneNode(true);
+						document.querySelector('#cards').appendChild(instance);
+					});
+				}
+			});
+
+			var actionCollection = new ActionCollection();
+	        actionCollection.fetch({
+            	success:function () {
+                	actionListView = new ActionListView({model:actionCollection});
+                	actionListView.render();
+            	}
+        	});
+			document.querySelector('#submitButton').onclick = function() {
+				var text = document.querySelector('#input').value;
+				var a = new Action({text: text});
+				actionCollection.create(a);
+			}
 		</script>
 	</body>
 </html>
