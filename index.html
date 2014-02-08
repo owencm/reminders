@@ -11,6 +11,17 @@
         -ms-user-select: none;
         user-select: none;
       }
+
+      #header {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 100;
+        font-size: 1.5em;
+        text-align: center;
+        padding: 10px;
+        border-bottom: 1px solid #dd0;
+        background-color: #ff0;
+      }
+
       .card-container {
         margin: 10px auto;
         padding: 0 10px 0 10px;
@@ -28,17 +39,19 @@
       }
       .card .card-action {
         color: #58f;
-        font-size: 1.05em;
+        font-size: 1em;
         padding: 15px 10px;
       }
       .card .menu {
-        background-image: url('dropdown.png');
-        background-size: 6px 17px;
-        width: 6px;
-        height: 17px;
+        background-repeat: no-repeat;
+        background-position: calc(100% - 10px) 15px;
+        background-image: url('dropdown@2x.png');
+        background-size: 3px 13px;
+        width: 40px;
+        height: 50px;
         position: absolute;
-        top: 10px;
-        right: 5px;
+        top: 0;
+        right: 0;
       }
       .card .menu:before {
         padding: 15px 20px 15px 15px;
@@ -58,7 +71,32 @@
         background-color: #eaeaea;
       }
 
+      .card label {
+        margin: 25px 0 10px 0;
+        display: block;
+        text-transform: uppercase;
+        font-size: 0.7em;
+        font-weight: bold;
+        color: #444;
+      }
+      .card select {
+        -webkit-appearance: listbox;
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #a9a9a9;
+        border-radius: 0;
+        background-color: rgba(0, 0, 0, 0);
+        padding: 5px;
+        outline: none;
+      }
+      .card select:active {
+        /* Todo: Ensure this is the same color as other clicks */
+        background-color: #ddd;
+      }
+
       input.holo[type='text'] {
+        /* Use scale to simulate 1px on high resolution devices */
+        /*-webkit-transform: scale(0.5);*/
         width: 100%;
         font-family: "Roboto", "Droid Sans", sans-serif;
         font-size: 16px;
@@ -90,23 +128,14 @@
   </head>
   <body>
 
-    <div class='card-container'>
-      <div class='card'>
-        <form type='submit' onsubmit='document.querySelector("#submitButton").click(); return false;'>
-          <div class='card-content-padder'>
-            <input type='text' id='titleInput' placeholder='Type intention here' autocomplete='off' autocapitalize='on' class='holo title'></input>
-          </div>
-          <div class='divider'></div>
-          <div class='card-action' id='submitButton'>
-            Create
-          </div>
-        </form>
-      </div>
+    <div id='header'>
+      Perfectly
     </div>
 
+    <div id='create-section'></div>
     <div id='cards'></div>
 
-    <template id='card'>
+    <template id='card-template'>
       <div class='card-container'>
         <div class='card'>
           <div class='card-content-padder'>
@@ -125,12 +154,65 @@
       </div>
     </template>
 
+    <template id='edit-card-template'>
+      <div class='card-container'>
+        <div class='card'>
+          <!-- TODO: make the submit action press the action -->
+          <form type='submit' onsubmit='return false;'>
+            <div class='card-content-padder'>
+              <input type='text' placeholder='Type intention here' autocomplete='off' autocapitalize='on' class='holo title-input'></input>
+              <label>Date last completed</label>
+              <select>
+                <option>Today</option>
+                <option>Yesterday</option>
+                <option>This week</option>
+                <option>Last week</option>
+                <option>This month</option>
+                <option>Last month</option>
+                <option>Earlier</option>
+              </select>
+  <!--             <label>Intended frequency:</label>
+              <select>
+                <option>Daily</option>
+                <option>Weekly</option>
+                <option>Monthly</option>
+              </select> -->
+            </div>
+            <div class='divider'></div>
+            <div class='card-action'>
+              Done
+            </div>
+          </form>
+        </div>
+      </div>
+    </template>
+
     <script type='text/javascript'>
+
+      // Render the create action view
+      var template = document.querySelector('#edit-card-template');
+      template.content.querySelector('.card').id = 'create-card';
+      var actionElem = template.content.querySelector('.card-action');
+      actionElem.innerHTML = 'Create';
+      var instance = template.content.cloneNode(true);
+      document.querySelector('#create-section').appendChild(instance);
+
+      var cardElem = document.querySelector('#create-card');
+      // Bind to clicks on 'Mark Done'
+      cardElem.querySelector('.card-action').onclick = function () {
+        var titleElement = cardElem.querySelector('.title-input');
+        var title = titleElement.value;
+        titleElement.value = '';
+        var a = new Action({title: title});
+        actionCollection.create(a);
+      }
+
       // Models
       var Action = Backbone.Model.extend({
         defaults: {
           'title': '',
-          'lastDone': (new Date).getTime()-86400000*2
+          'lastDone': (new Date).getTime()-86400000*2,
+          'beingEdited': false
         },
         lastDoneDays: function () {
           var milliSince = (new Date).getTime() - this.get('lastDone');
@@ -157,40 +239,62 @@
         render: function (event) {
           document.querySelector('#cards').innerHTML = '';
           _.each(this.model.models, function (action) {
-            var template = document.querySelector('template');
-            template.content.querySelector('.card').id = 'card-'+action.cid;
-            var titleElem = template.content.querySelector('.title');
-            titleElem.innerHTML = action.get('title');
-            var lastDoneElem = template.content.querySelector('.last-done');
-            lastDoneElem.innerHTML = action.lastDoneDays() + ' days ago';
-            var instance = template.content.cloneNode(true);
-            document.querySelector('#cards').appendChild(instance);
+            if (action.get('beingEdited')) {
+              // Render the edit action view
+              var template = document.querySelector('#edit-card-template');
+              template.content.querySelector('.card').id = 'card-'+action.cid;
+              var actionElem = template.content.querySelector('.card-action');
+              actionElem.innerHTML = 'Done';
+              var titleInputElem = template.content.querySelector('.title-input');
+              titleInputElem.value = action.get('title');
+              var instance = template.content.cloneNode(true);
+              document.querySelector('#cards').appendChild(instance);
 
-            // Bind to clicks on 'Mark Done'
-            var cardElem = document.querySelector('#card-'+action.cid);
-            cardElem.querySelector('.card-action').onclick = function () {
-              action.done();
+              var cardElem = document.querySelector('#card-'+action.cid);
+              var titleInputElem = cardElem.querySelector('.title-input');
+              titleInputElem.focus();
+              // Bind to clicks on 'Done'
+              cardElem.querySelector('.card-action').onclick = function () {
+                var title = titleInputElem.value;
+                action.set({'title': title, beingEdited: false});
+                action.save();
+              }
+            } else {
+              // Render the view action view
+              var template = document.querySelector('#card-template');
+              template.content.querySelector('.card').id = 'card-'+action.cid;
+              var titleElem = template.content.querySelector('.title');
+              titleElem.innerHTML = action.get('title');
+              var lastDoneElem = template.content.querySelector('.last-done');
+              var lastDoneString;
+              if (action.lastDoneDays() === 0) {
+                lastDoneString = 'Today';
+              } else {
+                lastDoneString = action.lastDoneDays() + ' days ago';
+              }
+              lastDoneElem.innerHTML = lastDoneString;
+              var instance = template.content.cloneNode(true);
+              document.querySelector('#cards').appendChild(instance);
+
+              var cardElem = document.querySelector('#card-'+action.cid);
+              // Bind to clicks on 'Mark Done'
+              cardElem.querySelector('.card-action').onclick = function () { action.done() };
+              // Bind to clicks on the menu
+              cardElem.querySelector('.menu').onclick = function () { 
+                action.set('beingEdited', true);
+              }
             }
-
           });
         }
       });
 
       var actionCollection = new ActionCollection();
-          actionCollection.fetch({
-              success:function () {
-                  actionListView = new ActionListView({model:actionCollection});
-                  actionListView.render();
-              }
-          });
-
-      document.querySelector('#submitButton').onclick = function() {
-        var titleElement = document.querySelector('#titleInput');
-        var title = titleElement.value;
-        titleElement.val('');
-        var a = new Action({title: title});
-        actionCollection.create(a);
-      }
+      actionCollection.fetch({
+          success:function () {
+              actionListView = new ActionListView({model:actionCollection});
+              actionListView.render();
+          }
+      });
 
       // This may be needed for form submitting
       // var hideKeyboard = function (element) {
