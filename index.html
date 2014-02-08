@@ -139,6 +139,7 @@
         },
         done: function () {
           this.set('lastDone', (new Date).getTime());
+          this.save();
         }
       });
       var ActionCollection = Backbone.Collection.extend({
@@ -182,8 +183,11 @@
                   actionListView.render();
               }
           });
+
       document.querySelector('#submitButton').onclick = function() {
-        var title = document.querySelector('#titleInput').value;
+        var titleElement = document.querySelector('#titleInput');
+        var title = titleElement.value;
+        titleElement.val('');
         var a = new Action({title: title});
         actionCollection.create(a);
       }
