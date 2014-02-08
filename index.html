@@ -27,7 +27,7 @@
         padding: 15px;
       }
       .card .card-action {
-        color: #68f;
+        color: #58f;
         font-size: 1.05em;
         padding: 15px 10px;
       }
@@ -50,7 +50,7 @@
         margin-bottom: 5px;
       }
       .card .last-done {
-        color: #bbb;
+        color: #aaa;
         font-size: 0.8em;
       }
       .card .divider {
@@ -130,12 +130,15 @@
       var Action = Backbone.Model.extend({
         defaults: {
           'title': '',
-          'lastDone': (new Date).getTime()
+          'lastDone': (new Date).getTime()-86400000*2
         },
         lastDoneDays: function () {
           var milliSince = (new Date).getTime() - this.get('lastDone');
           // Todo: check this should be a floor
           return Math.floor(milliSince/86400000);
+        },
+        done: function () {
+          this.set('lastDone', (new Date).getTime());
         }
       });
       var ActionCollection = Backbone.Collection.extend({
@@ -148,17 +151,26 @@
           this.model.bind('reset', this.render, this);
           // TODO: only render the new one by rendering a subview and appending it to this
           this.model.bind('add', this.render, this);
+          this.model.bind('change', this.render, this);
         },
         render: function (event) {
           document.querySelector('#cards').innerHTML = '';
           _.each(this.model.models, function (action) {
             var template = document.querySelector('template');
+            template.content.querySelector('.card').id = 'card-'+action.cid;
             var titleElem = template.content.querySelector('.title');
             titleElem.innerHTML = action.get('title');
             var lastDoneElem = template.content.querySelector('.last-done');
             lastDoneElem.innerHTML = action.lastDoneDays() + ' days ago';
             var instance = template.content.cloneNode(true);
             document.querySelector('#cards').appendChild(instance);
+
+            // Bind to clicks on 'Mark Done'
+            var cardElem = document.querySelector('#card-'+action.cid);
+            cardElem.querySelector('.card-action').onclick = function () {
+              action.done();
+            }
+
           });
         }
       });
