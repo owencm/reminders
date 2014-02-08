@@ -119,7 +119,7 @@
         font-size: 1.2em;
       }
 
-      #add-button {
+      #create-button {
         position: fixed;
         bottom: 15px;
         right: 15px;
@@ -150,7 +150,7 @@
     <div id='create-section'></div>
     <div id='cards'></div>
 
-    <div id='add-button'></div>
+    <div id='create-button'></div>
 
     <template id='card-template'>
       <div class='card-container'>
@@ -206,23 +206,26 @@
 
     <script type='text/javascript'>
 
-      // Render the create action view
-      var template = document.querySelector('#edit-card-template');
-      template.content.querySelector('.card').id = 'create-card';
-      var actionElem = template.content.querySelector('.card-action');
-      actionElem.innerHTML = 'Create';
-      var instance = template.content.cloneNode(true);
-      document.querySelector('#create-section').appendChild(instance);
+      var renderCreateAction = function () {
+        var template = document.querySelector('#edit-card-template');
+        template.content.querySelector('.card').id = 'create-card';
+        var actionElem = template.content.querySelector('.card-action');
+        actionElem.innerHTML = 'Create';
+        var instance = template.content.cloneNode(true);
+        document.querySelector('#create-section').appendChild(instance);
 
-      var cardElem = document.querySelector('#create-card');
-      // Bind to clicks on 'Mark Done'
-      cardElem.querySelector('.card-action').onclick = function () {
-        var titleElement = cardElem.querySelector('.title-input');
-        var title = titleElement.value;
-        titleElement.value = '';
-        var a = new Action({title: title});
-        actionCollection.create(a);
+        var cardElem = document.querySelector('#create-card');
+        // Bind to clicks on 'Create'
+        cardElem.querySelector('.card-action').onclick = function () {
+          var titleElement = cardElem.querySelector('.title-input');
+          var title = titleElement.value;
+          titleElement.value = '';
+          var a = new Action({title: title});
+          actionCollection.create(a);
+        }
       }
+
+      document.querySelector('#create-button').onclick = renderCreateAction;
 
       // Models
       var Action = Backbone.Model.extend({
