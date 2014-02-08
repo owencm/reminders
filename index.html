@@ -72,36 +72,6 @@
 				box-shadow: 0 2px 1px 0 #bbb;
 			}
 
-			.android-input-right {
-				display:inline-block;
-				height:7px;
-				border-left:1px solid #ccc;
-				border-right: 1px solid #ccc;
-				position:absolute;
-				margin-top:23px;
-				margin-left:-260px;
-				width:258px;
-				pointer-events: none;
-			}
-
-			.android-input {
-				background-color:rgba(0,0,0,0);
-				display:inline-block;
-				height:30px;
-				font-size:16px;
-				width:250px;
-				border:1px solid  #ccc;
-				border-width:0px 0px 1px 0px;
-				padding:0px 5px;  
-				outline:none;
-			}
-
-			.android-input:hover, .android-input:focus,
-			.android-input:hover + .android-input-right,
-			.android-input:focus + .android-input-right {
-				border-color:#4ab5d9;
-			}
-
 		</style>
 		<link rel='stylesheet' type='text/css' href='reset.css' />
 		<meta name='viewport' content='width=device-width, user-scalable=no'>
@@ -111,10 +81,6 @@
 		<script type='text/javascript' src='backbone.localStorage.js'></script>
 	</head>
 	<body>
-		<input type='text' id='titleInput' placeholder='Buy flowers for Mom' class='android-input'></input>
-		<div class='android-input-right'></div>
-		<input type='submit' id='submitButton'></input>
-
 		<div id='cards'></div>
 
 		<div id='add-button'></div>
