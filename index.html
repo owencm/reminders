@@ -119,6 +119,20 @@
         font-size: 1.2em;
       }
 
+      #add-button {
+        position: fixed;
+        bottom: 15px;
+        right: 15px;
+        background-image: url('add.png');
+        background-repeat: no-repeat;
+        background-position: center; 
+        background-color: #57f;
+        height: 60px;
+        width: 60px;
+        border-radius: 30px;
+        box-shadow: 0 2px 1px 0 #bbb;
+      }
+
     </style>
     <link rel='stylesheet' type='text/css' href='reset.css' />
     <meta name='viewport' content='width=device-width, user-scalable=no'>
@@ -135,6 +149,8 @@
 
     <div id='create-section'></div>
     <div id='cards'></div>
+
+    <div id='add-button'></div>
 
     <template id='card-template'>
       <div class='card-container'>
