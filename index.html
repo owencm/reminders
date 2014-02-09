@@ -43,6 +43,9 @@
         font-size: 1em;
         padding: 15px 10px;
       }
+      .card .card-action:hover {
+        background-color: #f5f5f5;
+      }
       /* TODO: Disable create button until it's able to be pressed; */
       /* .card .card-action .disabled {
         color: #aaa;
@@ -266,7 +269,7 @@
           } else if (lastDoneDays <= 365) {
             lastDoneString = Math.floor(lastDoneDays/30) + ' months ago';
           } else {
-            lastDoneString = 'Not completed in living memory'
+            lastDoneString = 'Not done in living memory'
           }
 
           return template({action: 'Mark done', title: attr.title, lastDone: lastDoneString, primaryAction: 'done'});
@@ -278,7 +281,7 @@
       var Action = Backbone.Model.extend({
         defaults: {
           'title': '',
-          'lastDone': (new Date).getTime()-86400000*2,
+          'lastDone': (new Date).getTime(),
           'beingEdited': false
         },
         setLastDoneNDaysAgo: function (days) {
@@ -392,9 +395,9 @@
           var titleElement = this.el.querySelector('.title-input');
           var lastDoneElem = this.el.querySelector('select');
           var title = titleElement.value;
-          // var lastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
+          var lastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
           var a = new Action({title: title});
-          // a.setLastDoneNDaysAgo(lastDone);
+          a.setLastDoneNDaysAgo(lastDone);
           actionCollection.create(a);
           setCreateMode(false);
         },
