@@ -164,7 +164,7 @@
             </div>
           </div>
           <div class='divider'></div>
-          <div class='card-action'>
+          <div class='card-action <%= primaryAction %>'>
             <%= action %>
           </div>
         </div>
@@ -190,7 +190,7 @@
               </select>
             </div>
             <div class='divider'></div>
-            <div class='card-action'>
+            <div class='card-action <%= primaryAction %>'>
               Done
             </div>
           </form>
@@ -213,6 +213,12 @@
     <script type='text/javascript'>
 
       var templates = {
+        createActionView: function () {
+          var templateElem = document.querySelector('#edit-card-template');
+          var template = _.template(templateElem.innerHTML);
+          return template({action: 'Create', title: '', primaryAction: 'create'});
+        },
+
         editActionView: function (attr) {
           var templateElem = document.querySelector('#edit-card-template');
           var template = _.template(templateElem.innerHTML);
@@ -237,7 +243,7 @@
           //   lastDoneString = 'Not completed in living memory'
           // }
 
-          return template({action: 'Done', title: attr.title});
+          return template({action: 'Done', title: attr.title, primaryAction: 'save'});
         },
         actionView: function (attr) {
           var templateElem = document.querySelector('#card-template');
@@ -263,50 +269,9 @@
             lastDoneString = 'Not completed in living memory'
           }
 
-          return template({action: 'Mark done', title: attr.title, lastDone: lastDoneString});
+          return template({action: 'Mark done', title: attr.title, lastDone: lastDoneString, primaryAction: 'done'});
         }
       };
-
-      // var renderCreateAction = function () {
-      //   var template = document.querySelector('#edit-card-template');
-      //   template.content.querySelector('.card-container').id = 'create-card';
-      //   var actionElem = template.content.querySelector('.card-action');
-      //   actionElem.innerHTML = 'Create';
-      //   var instance = template.content.cloneNode(true);
-      //   document.querySelector('#create-section').appendChild(instance);
-
-      //   var cardElem = document.querySelector('#create-card');
-      //   cardElem.querySelector('.title-input').focus();
-      //   // Bind to clicks on 'Create'
-      //   cardElem.querySelector('.card-action').onclick = function () {
-      //     // Read values to enable creation
-      //     var titleElement = cardElem.querySelector('.title-input');
-      //     var title = titleElement.value;
-      //     var lastDoneElem = cardElem.querySelector('select');
-      //     var lastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
-      //     var a = new Action({title: title});
-      //     a.setLastDoneNDaysAgo(lastDone);
-      //     actionCollection.create(a);
-      //     setCreateMode(false);
-      //   }
-      // }
-
-      // var setCreateMode = function (bool) {
-      //   if (bool) {
-      //     renderCreateAction();
-      //     var createButtonElem = document.querySelector('#create-button');
-      //     createButtonElem.style.display = 'none';
-      //   } else {
-      //     document.querySelector('#create-section').innerHTML = '';
-      //     var createButtonElem = document.querySelector('#create-button');
-      //     createButtonElem.style.display = 'block';          
-      //   }
-      // }
-
-      // var createButtonElem = document.querySelector('#create-button');
-      // createButtonElem.onclick = function () {
-      //   setCreateMode(true);
-      // }
 
       // Models
 
@@ -368,7 +333,7 @@
         template: templates.actionView,
 
         events: {
-          'click .card-action': 'markDone',
+          'click .card-action.done': 'markDone',
           'click .menu': 'edit'
         },
 
@@ -391,7 +356,7 @@
         template: templates.editActionView,
 
         events: {
-          'click .card-action': 'saveChange'
+          'click .card-action.save': 'saveChange'
         },
 
         render: function () {
@@ -399,7 +364,6 @@
         },
 
         saveChange: function () {
-          console.log(this.el);
           var titleElem = this.el.querySelector('.title-input');
           var lastDoneElem = this.el.querySelector('select');
           var title = titleElem.value;
@@ -412,9 +376,29 @@
       var CreateActionView = Backbone.View.extend({
         el: '#create-section',
 
-        render: function () {
+        template: templates.createActionView,
 
+        render: function () {
+          // cardElem.querySelector('.title-input').focus();
+          this.el.innerHTML = this.template();
+        },
+
+        events: {
+          'click .card-action.create': 'create'
+        },
+
+        create: function () {
+          // Read values to enable creation
+          var titleElement = this.el.querySelector('.title-input');
+          var lastDoneElem = this.el.querySelector('select');
+          var title = titleElement.value;
+          // var lastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
+          var a = new Action({title: title});
+          // a.setLastDoneNDaysAgo(lastDone);
+          actionCollection.create(a);
+          setCreateMode(false);
         }
+
       });
 
       // Now do stuff with it!
@@ -426,6 +410,25 @@
               actionListView.render();
           }
       });
+
+      var createActionView = new CreateActionView();
+
+      var setCreateMode = function (bool) {
+        if (bool) {
+          createActionView.render();
+          var createButtonElem = document.querySelector('#create-button');
+          createButtonElem.style.display = 'none';
+        } else {
+          createActionView.remove();
+          var createButtonElem = document.querySelector('#create-button');
+          createButtonElem.style.display = 'block';          
+        }
+      }
+
+      var createButtonElem = document.querySelector('#create-button');
+      createButtonElem.onclick = function () {
+        setCreateMode(true);
+      }
 
     </script>
   </body>
