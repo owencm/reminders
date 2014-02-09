@@ -149,6 +149,55 @@
     <script type='text/javascript' src='underscore.js'></script>
     <script type='text/javascript' src='backbone.js'></script>
     <script type='text/javascript' src='backbone.localStorage.js'></script>
+
+    <script type='text/template' id='card-template'>
+      <div class='card-container'>
+        <div class='card'>
+          <div class='card-content-padder'>
+            <div class='menu'>
+            </div>
+            <div class='title'>
+              <%= title %>
+            </div>
+            <div class='last-done'>
+              <%= lastDone %>
+            </div>
+          </div>
+          <div class='divider'></div>
+          <div class='card-action'>
+            <%= action %>
+          </div>
+        </div>
+      </div>
+    </script>
+
+    <script type='text/template' id='edit-card-template'>
+      <div class='card-container'>
+        <div class='card'>
+          <!-- TODO: make the submit action press the action -->
+          <form type='submit' onsubmit='return false;'>
+            <div class='card-content-padder'>
+              <input type='text' placeholder='Type intention here' autocomplete='off' autocapitalize='on' class='holo title-input' value='<%= title %>'></input>
+              <label>Date last completed</label>
+              <select>
+                <option value='0'>Today</option>
+                <option value='1'>Yesterday</option>
+                <option value='5'>This week</option>
+                <option value='10'>Last week</option>
+                <option value='23'>This month</option>
+                <option value='45'>Last month</option>
+                <option value='9999'>Earlier</option>
+              </select>
+            </div>
+            <div class='divider'></div>
+            <div class='card-action'>
+              Done
+            </div>
+          </form>
+        </div>
+      </div>
+    </script>
+
   </head>
   <body>
 
@@ -161,102 +210,106 @@
 
     <div id='create-button'></div>
 
-    <template id='card-template'>
-      <div class='card-container'>
-        <div class='card'>
-          <div class='card-content-padder'>
-            <div class='menu'>
-            </div>
-            <div class='title'>
-            </div>
-            <div class='last-done'>
-            </div>
-          </div>
-          <div class='divider'></div>
-          <div class='card-action'>
-            Mark done
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <template id='edit-card-template'>
-      <div class='card-container'>
-        <div class='card'>
-          <!-- TODO: make the submit action press the action -->
-          <form type='submit' onsubmit='return false;'>
-            <div class='card-content-padder'>
-              <input type='text' placeholder='Type intention here' autocomplete='off' autocapitalize='on' class='holo title-input'></input>
-              <label>Date last completed</label>
-              <select>
-                <option value='0'>Today</option>
-                <option value='1'>Yesterday</option>
-                <option value='5'>This week</option>
-                <option value='10'>Last week</option>
-                <option value='23'>This month</option>
-                <option value='45'>Last month</option>
-                <option value='9999'>Earlier</option>
-              </select>
-  <!--             <label>Intended frequency:</label>
-              <select>
-                <option>Daily</option>
-                <option>Weekly</option>
-                <option>Monthly</option>
-              </select> -->
-            </div>
-            <div class='divider'></div>
-            <div class='card-action'>
-              Done
-            </div>
-          </form>
-        </div>
-      </div>
-    </template>
-
     <script type='text/javascript'>
 
-      var renderCreateAction = function () {
-        var template = document.querySelector('#edit-card-template');
-        template.content.querySelector('.card-container').id = 'create-card';
-        var actionElem = template.content.querySelector('.card-action');
-        actionElem.innerHTML = 'Create';
-        var instance = template.content.cloneNode(true);
-        document.querySelector('#create-section').appendChild(instance);
+      var templates = {
+        editActionView: function (attr) {
+          var templateElem = document.querySelector('#edit-card-template');
+          var template = _.template(templateElem.innerHTML);
 
-        var cardElem = document.querySelector('#create-card');
-        cardElem.querySelector('.title-input').focus();
-        // Bind to clicks on 'Create'
-        cardElem.querySelector('.card-action').onclick = function () {
-          // Read values to enable creation
-          var titleElement = cardElem.querySelector('.title-input');
-          var title = titleElement.value;
-          var lastDoneElem = cardElem.querySelector('select');
-          var lastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
-          var a = new Action({title: title});
-          a.setLastDoneNDaysAgo(lastDone);
-          actionCollection.create(a);
-          setCreateMode(false);
+          // var lastDoneDays = Math.floor(((new Date).getTime() - attr.lastDone)/86400000);
+          // var lastDoneString;
+          // if (lastDoneDays === 0) {
+          //   lastDoneString = 'Today';
+          // } else if (lastDoneDays === 1) {
+          //   lastDoneString = 'Yesterday';
+          // } else if (lastDoneDays <= 7) {
+          //   lastDoneString = 'Within the last week';
+          // } else if (lastDoneDays <= 14) {
+          //   lastDoneString = 'Last week';
+          // } else if (lastDoneDays <= 30) {
+          //   lastDoneString = 'This month';
+          // } else if (lastDoneDays <= 60) {
+          //   lastDoneString = '1 month ago';
+          // } else if (lastDoneDays <= 365) {
+          //   lastDoneString = Math.floor(lastDoneDays/30) + ' months ago';
+          // } else {
+          //   lastDoneString = 'Not completed in living memory'
+          // }
+
+          return template({action: 'Done', title: attr.title});
+        },
+        actionView: function (attr) {
+          var templateElem = document.querySelector('#card-template');
+          var template = _.template(templateElem.innerHTML);
+
+          var lastDoneDays = Math.floor(((new Date).getTime() - attr.lastDone)/86400000);
+          var lastDoneString;
+          if (lastDoneDays === 0) {
+            lastDoneString = 'Today';
+          } else if (lastDoneDays === 1) {
+            lastDoneString = 'Yesterday';
+          } else if (lastDoneDays <= 7) {
+            lastDoneString = 'Within the last week';
+          } else if (lastDoneDays <= 14) {
+            lastDoneString = 'Last week';
+          } else if (lastDoneDays <= 30) {
+            lastDoneString = 'This month';
+          } else if (lastDoneDays <= 60) {
+            lastDoneString = '1 month ago';
+          } else if (lastDoneDays <= 365) {
+            lastDoneString = Math.floor(lastDoneDays/30) + ' months ago';
+          } else {
+            lastDoneString = 'Not completed in living memory'
+          }
+
+          return template({action: 'Mark done', title: attr.title, lastDone: lastDoneString});
         }
-      }
+      };
 
-      var setCreateMode = function (bool) {
-        if (bool) {
-          renderCreateAction();
-          var createButtonElem = document.querySelector('#create-button');
-          createButtonElem.style.display = 'none';
-        } else {
-          document.querySelector('#create-section').innerHTML = '';
-          var createButtonElem = document.querySelector('#create-button');
-          createButtonElem.style.display = 'block';          
-        }
-      }
+      // var renderCreateAction = function () {
+      //   var template = document.querySelector('#edit-card-template');
+      //   template.content.querySelector('.card-container').id = 'create-card';
+      //   var actionElem = template.content.querySelector('.card-action');
+      //   actionElem.innerHTML = 'Create';
+      //   var instance = template.content.cloneNode(true);
+      //   document.querySelector('#create-section').appendChild(instance);
 
-      var createButtonElem = document.querySelector('#create-button');
-      createButtonElem.onclick = function () {
-        setCreateMode(true);
-      }
+      //   var cardElem = document.querySelector('#create-card');
+      //   cardElem.querySelector('.title-input').focus();
+      //   // Bind to clicks on 'Create'
+      //   cardElem.querySelector('.card-action').onclick = function () {
+      //     // Read values to enable creation
+      //     var titleElement = cardElem.querySelector('.title-input');
+      //     var title = titleElement.value;
+      //     var lastDoneElem = cardElem.querySelector('select');
+      //     var lastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
+      //     var a = new Action({title: title});
+      //     a.setLastDoneNDaysAgo(lastDone);
+      //     actionCollection.create(a);
+      //     setCreateMode(false);
+      //   }
+      // }
+
+      // var setCreateMode = function (bool) {
+      //   if (bool) {
+      //     renderCreateAction();
+      //     var createButtonElem = document.querySelector('#create-button');
+      //     createButtonElem.style.display = 'none';
+      //   } else {
+      //     document.querySelector('#create-section').innerHTML = '';
+      //     var createButtonElem = document.querySelector('#create-button');
+      //     createButtonElem.style.display = 'block';          
+      //   }
+      // }
+
+      // var createButtonElem = document.querySelector('#create-button');
+      // createButtonElem.onclick = function () {
+      //   setCreateMode(true);
+      // }
 
       // Models
+
       var Action = Backbone.Model.extend({
         defaults: {
           'title': '',
@@ -264,101 +317,107 @@
           'beingEdited': false
         },
         setLastDoneNDaysAgo: function (days) {
-          this.set('lastDone', (new Date).getTime()-86400000*days);
-        },
-        lastDoneDays: function () {
-          var milliSince = (new Date).getTime() - this.get('lastDone');
-          // Todo: check this should be a floor
-          return Math.floor(milliSince/86400000);
+          this.save({lastDone: (new Date).getTime()-86400000*days});
         },
         done: function () {
-          this.set('lastDone', (new Date).getTime());
-          this.save();
+          this.save({lastDone: (new Date).getTime()});
         }
       });
+
       var ActionCollection = Backbone.Collection.extend({
         model: Action,
         localStorage: new Backbone.LocalStorage('ActionCollection'), 
       });
+
       // Views
+
       ActionListView = Backbone.View.extend({
         initialize: function () {
           this.model.bind('reset', this.render, this);
           // TODO: only render the new one by rendering a subview and appending it to this
           this.model.bind('add', this.render, this);
-          this.model.bind('change', this.render, this);
+          // this.model.bind('change', this.render, this);
         },
         render: function (event) {
           document.querySelector('#cards').innerHTML = '';
           _.each(this.model.models, function (action) {
-            if (action.get('beingEdited')) {
-              // Render the edit action view
-              var template = document.querySelector('#edit-card-template');
-              template.content.querySelector('.card-container').id = 'card-'+action.cid;
-              var actionElem = template.content.querySelector('.card-action');
-              actionElem.innerHTML = 'Done';
-              var titleInputElem = template.content.querySelector('.title-input');
-              titleInputElem.value = action.get('title');
-              var instance = template.content.cloneNode(true);
-              document.querySelector('#cards').appendChild(instance);
-
-              var cardElem = document.querySelector('#card-'+action.cid);
-              var titleInputElem = cardElem.querySelector('.title-input');
-              titleInputElem.focus();
-              // Bind to clicks on 'Done'
-              cardElem.querySelector('.card-action').onclick = function () {
-                var title = titleInputElem.value;
-                var lastDoneElem = cardElem.querySelector('select');
-                var lastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
-                action.setLastDoneNDaysAgo(lastDone);
-                action.set({'title': title, beingEdited: false});
-                action.save();
-              }
-            } else {
-              // Render the view action view
-              var template = document.querySelector('#card-template');
-              template.content.querySelector('.card-container').id = 'card-'+action.cid;
-              var titleElem = template.content.querySelector('.title');
-              titleElem.innerHTML = action.get('title');
-              var lastDoneElem = template.content.querySelector('.last-done');
-              var lastDoneString;
-              var lastDoneDays = action.lastDoneDays();
-              if (action.lastDoneDays() === 0) {
-                lastDoneString = 'Today';
-              } else if (lastDoneDays === 1) {
-                lastDoneString = 'Yesterday';
-              } else if (lastDoneDays <= 7) {
-                lastDoneString = 'Within the last week';
-              } else if (lastDoneDays <= 14) {
-                lastDoneString = 'Last week';
-              } else if (lastDoneDays <= 30) {
-                lastDoneString = 'This month';
-              } else if (lastDoneDays <= 60) {
-                lastDoneString = '1 month ago';
-              } else if (lastDoneDays <= 90) {
-                lastDoneString = '3 months ago';
-              } else if (lastDoneDays <= 180) {
-                lastDoneString = '6 months ago';
-              } else if (lastDoneDays <= 274) {
-                lastDoneString = '9 months ago';
-              } else {
-                lastDoneString = 'Not in living memory'
-              }
-              lastDoneElem.innerHTML = lastDoneString;
-              var instance = template.content.cloneNode(true);
-              document.querySelector('#cards').appendChild(instance);
-
-              var cardElem = document.querySelector('#card-'+action.cid);
-              // Bind to clicks on 'Mark Done'
-              cardElem.querySelector('.card-action').onclick = function () { action.done() };
-              // Bind to clicks on the menu
-              cardElem.querySelector('.menu').onclick = function () { 
-                action.set('beingEdited', true);
-              }
-            }
+            var actionView = new ActionView({model: action});
+            actionView.render();
           });
         }
       });
+
+      var ActionView = Backbone.View.extend({
+        initialize: function () {
+          this.listenTo(this.model, "change", this.render);
+          document.querySelector('#cards').appendChild(this.el);
+          this.editActionView = new EditActionView({model: this.model, el: this.el});
+          this.viewActionView = new ViewActionView({model: this.model, el: this.el});
+        },
+
+        render: function () {
+          if (this.model.attributes.beingEdited) {
+            this.editActionView.render();
+          } else {
+            this.viewActionView.render();
+          }
+        }
+      });
+
+      var ViewActionView = Backbone.View.extend({
+        template: templates.actionView,
+
+        events: {
+          'click .card-action': 'markDone',
+          'click .menu': 'edit'
+        },
+
+        render: function () {
+          this.el.innerHTML = this.template(this.model.attributes);
+        },
+
+        markDone: function () {
+          this.model.done();
+        },
+
+        edit: function () {
+          this.model.set('beingEdited', true);
+        }
+      });
+
+      var EditActionView = Backbone.View.extend({
+        id: function () { 'edit-card-' + this.model.cid },
+
+        template: templates.editActionView,
+
+        events: {
+          'click .card-action': 'saveChange'
+        },
+
+        render: function () {
+          this.el.innerHTML = this.template(this.model.attributes);
+        },
+
+        saveChange: function () {
+          console.log(this.el);
+          var titleElem = this.el.querySelector('.title-input');
+          var lastDoneElem = this.el.querySelector('select');
+          var title = titleElem.value;
+          var lastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
+          this.model.setLastDoneNDaysAgo(lastDone);
+          this.model.save({'title': title, beingEdited: false});
+        }
+      });
+
+      var CreateActionView = Backbone.View.extend({
+        el: '#create-section',
+
+        render: function () {
+
+        }
+      });
+
+      // Now do stuff with it!
 
       var actionCollection = new ActionCollection();
       actionCollection.fetch({
@@ -368,17 +427,6 @@
           }
       });
 
-      // This may be needed for form submitting
-      // var hideKeyboard = function (element) {
-      //   element.attr('readonly', 'readonly'); // Force keyboard to hide on input field.
-      //   element.attr('disabled', 'true'); // Force keyboard to hide on textarea field.
-      //   setTimeout(function() {
-      //       element.blur();  //actually close the keyboard
-      //       // Remove readonly attribute after keyboard is hidden.
-      //       element.removeAttr('readonly');
-      //       element.removeAttr('disabled');
-      //   }, 100);
-      // }
     </script>
   </body>
 </html>
