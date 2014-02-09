@@ -47,9 +47,9 @@
         background-position: 13px center;
         background-size: 18px 18px;
       }
-      .card .card-action:hover {
+/*      .card .card-action:hover {
         background-color: #f5f5f5;
-      }
+      }*/
       /* TODO: Disable create button until it's able to be pressed; */
       /* .card .card-action .disabled {
         color: #aaa;
@@ -197,13 +197,13 @@
               </select>
               <label for='target-frequency'>Do this every</label>
               <select name='target-frequency'>
-                <option value=1>Day</option>
-                <option value=7>Week</option>
-                <option value=14>Two weeks</option>
-                <option value=30>Month</option>
-                <option value=60>Two months</option>
-                <option value=180>Six months</option>
-                <option value=365>Year</option>
+                <option value=1 <% if (targetFrequency == 1) print('selected') %>>Day</option>
+                <option value=7 <% if (targetFrequency == 7) print('selected') %>>Week</option>
+                <option value=14 <% if (targetFrequency == 14) print('selected') %>>Two weeks</option>
+                <option value=30 <% if (targetFrequency == 30) print('selected') %>>Month</option>
+                <option value=60 <% if (targetFrequency == 60) print('selected') %>>Two months</option>
+                <option value=180 <% if (targetFrequency == 180) print('selected') %>>Six months</option>
+                <option value=365 <% if (targetFrequency == 365) print('selected') %>>Year</option>
               </select>
             </div>
             <div class='divider'></div>
@@ -261,7 +261,7 @@
         createActionView: function () {
           var templateElem = document.querySelector('#edit-card-template');
           var template = _.template(templateElem.innerHTML);
-          return template({action: 'Create', title: '', primaryAction: 'create'});
+          return template({action: 'Create', title: '', primaryAction: 'create', lastDone: 0, targetFrequency: 7});
         },
 
         editActionView: function (attr) {
@@ -269,8 +269,9 @@
           var template = _.template(templateElem.innerHTML);
 
           var lastDoneDays = lastDoneDaysToOptionValue(timeStampToDaysAgo(attr.lastDone));
+          var targetFrequency = attr.targetFrequency;
 
-          return template({action: 'Done', title: attr.title, lastDone: lastDoneDays, primaryAction: 'save'});
+          return template({action: 'Done', title: attr.title, lastDone: lastDoneDays, targetFrequency: targetFrequency, primaryAction: 'save'});
         },
         actionView: function (attr) {
           var templateElem = document.querySelector('#card-template');
@@ -396,9 +397,13 @@
           var lastDoneElem = this.el.querySelector('select[name="last-completed"]');
           var targetFrequencyElem = this.el.querySelector('select[name="target-frequency"]');
           var title = titleElem.value;
-          var lastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
           var targetFrequency = parseInt(targetFrequencyElem.options[targetFrequencyElem.selectedIndex].value);
-          this.model.setLastDoneNDaysAgo(lastDone);
+          // Get the new value and only update the model if it's different to the old value
+          var newLastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
+          var currentLastDone = lastDoneDaysToOptionValue(timeStampToDaysAgo(this.model.attributes.lastDone));
+          if (currentLastDone != newLastDone) {
+            this.model.setLastDoneNDaysAgo(newLastDone);
+          }
           this.model.save({'title': title, 'targetFrequency': targetFrequency, beingEdited: false});
         }
       });
@@ -426,8 +431,9 @@
           var lastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
           var targetFrequency = parseInt(targetFrequencyElem.options[targetFrequencyElem.selectedIndex].value);
           var a = new Action({title: title, targetFrequency: targetFrequency});
-          a.setLastDoneNDaysAgo(lastDone);
           actionCollection.create(a);
+          // Find a way to add this earlier so we don't have to rerender. We can't stick it above because a model must be added to a collection before saving
+          a.setLastDoneNDaysAgo(lastDone);
           setCreateMode(false);
         },
 
