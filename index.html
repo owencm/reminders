@@ -397,8 +397,17 @@
           // a.setLastDoneNDaysAgo(lastDone);
           actionCollection.create(a);
           setCreateMode(false);
-        }
+        },
 
+        show: function () {
+          // TODO: potentially avoid this render
+          this.render();
+          this.$el.show();
+        },
+
+        hide: function () {
+          this.$el.hide();
+        }
       });
 
       // Now do stuff with it!
@@ -411,17 +420,16 @@
           }
       });
 
-      var createActionView = new CreateActionView();
-
+      var createActionView = new CreateActionView();;
       var setCreateMode = function (bool) {
         if (bool) {
-          createActionView.render();
+          createActionView.show();
           var createButtonElem = document.querySelector('#create-button');
           createButtonElem.style.display = 'none';
         } else {
-          createActionView.remove();
+          createActionView.hide();
           var createButtonElem = document.querySelector('#create-button');
-          createButtonElem.style.display = 'block';          
+          createButtonElem.style.display = 'block';
         }
       }
 
