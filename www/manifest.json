@@ -1,0 +1,22 @@
+{
+  "name": "Aspire",
+  "description": "Be the person you wish you were",
+  "manifest_version": 2,
+  "minimum_chrome_version": "23",
+  "version": "0.1.1",
+  "offline_enabled": true,
+  "icons": {
+    "36": "assets/icon.png",
+    "48": "assets/icon.png",
+    "78": "assets/icon.png",
+    "96": "assets/icon.png"
+  },
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "permissions": [
+    "<all_urls>"
+  ]
+}
