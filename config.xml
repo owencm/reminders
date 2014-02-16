@@ -3,9 +3,10 @@
     <name>Aspire</name>
     <description>Be the person you wish you were</description>
     <author />
+    <plugin name="Media" value="org.apache.cordova.AudioHandler" />
     <preference name="KeyboardShrinksView" value="true" />
     <preference name="StatusBarOverlaysWebView" value="false" />
-    <preference name="StatusBarBackgroundColor" value="#000000" />
+    <preference name="StatusBarBackgroundColor" value="#266ee4" />
     <preference name="iosPersistentFileLocation" value="Library" />
     <preference name="AndroidPersistentFileLocation" value="Internal" />
     <content src="plugins/org.chromium.bootstrap/chromeapp.html" />

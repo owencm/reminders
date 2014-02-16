@@ -1,186 +1,14 @@
 <!DOCTYPE>
 <html>
   <head>
-    <style>
-      html {
-        background-color: #eee;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-      }
-
-      #header {
-        font-family: 'Roboto', sans-serif;
-        font-weight: 100;
-        font-size: 1.5em;
-        color: white;
-        text-align: center;
-        padding: 15px;
-        border-bottom: 1px solid #abacad;
-        background-color: #4285f4;
-      }
-
-      .divider-text {
-        font-family: 'Roboto', sans-serif;
-        font-weight: bold;
-        font-size: 0.75em;
-        text-align: center;
-        text-transform: uppercase;
-        color: #777;
-        margin: 12px 10px -2px 10px;
-      }
-
-      .card-container {
-        margin: 15px auto;
-        padding: 0 10px 0 10px;
-      }
-      .card {
-        position: relative;
-        background-color: white;
-        border-radius: 2px;
-        box-shadow: 0 2px 0px 0px #cfcfcf;
-        font-family: 'Roboto', sans-serif;
-        font-weight: 100;
-      }
-      .card .card-content-padder {
-        padding: 15px;
-      }
-      .card .card-action {
-        color: #58f;
-        font-size: 1em;
-        padding: 15px 38px;
-      }
-      .card .card-action.save, .card .card-action.create, .card .card-action.done {
-        background-image: url('check@xx.png');
-        background-repeat: no-repeat;
-        background-position: 13px center;
-        background-size: 18px 18px;
-      }  
-      .card .card-action.remove {
-        background-image: url('remove.png');
-        background-repeat: no-repeat;
-        background-position: 13px center;
-        background-size: 18px 18px;
-      }
-/*      .card .card-action:hover {
-        background-color: #f5f5f5;
-      }*/
-      /* TODO: Disable create button until it's able to be pressed; */
-      /* .card .card-action .disabled {
-        color: #aaa;
-      }*/
-      .card .menu {
-        background-repeat: no-repeat;
-        background-position: calc(100% - 10px) 15px;
-        background-image: url('dropdown@2x.png');
-        background-size: 3px 13px;
-        width: 40px;
-        height: 50px;
-        position: absolute;
-        top: 0;
-        right: 0;
-      }
-      .card .menu:before {
-        padding: 15px 20px 15px 15px;
-      }
-      .card .title {
-        color: #777;
-        font-size: 1.3em;
-        line-height: 1.3em;
-        margin-bottom: 5px;
-      }
-      .card .last-done {
-        color: #aaa;
-        font-size: 0.8em;
-      }
-      .card .divider {
-        height: 1px;
-        background-color: #eaeaea;
-      }
-
-      .card label {
-        margin: 25px 0 10px 0;
-        display: block;
-        text-transform: uppercase;
-        font-size: 0.75em;
-        font-weight: bold;
-        color: #444;
-      }
-      .card select {
-        -webkit-appearance: listbox;
-        font-size: 1.05em;
-        width: 100%;
-        border: none;
-        border-bottom: 1px solid #a9a9a9;
-        border-radius: 0;
-        background-color: rgba(0, 0, 0, 0);
-        background-image: url('corner@xx.png');
-        background-size: 10px 10px;
-        background-position: right bottom;
-        background-repeat: no-repeat;
-        padding: 12px 6px;
-        outline: none;
-      }
-      .card select:active {
-        /* Todo: Ensure this is the same color as other clicks */
-        background-color: #ddd;
-      }
-
-      input.holo[type='text'] {
-        /* Use scale to simulate 1px on high resolution devices */
-        /*-webkit-transform: scale(0.5);*/
-        width: 100%;
-        font-family: "Roboto", "Droid Sans", sans-serif;
-        font-size: 16px;
-        margin: 0;
-        padding: 8px 8px 6px 8px;
-        position: relative;
-        display: block;
-        outline: none;
-        border: none;
-        background: bottom left linear-gradient(#a9a9a9, #a9a9a9) no-repeat, bottom center linear-gradient(#a9a9a9, #a9a9a9) repeat-x, bottom right linear-gradient(#a9a9a9, #a9a9a9) no-repeat;
-        background-size: 1px 6px, 1px 1px, 1px 6px;
-      }
-      input.holo[type='text']:hover, input.holo[type='text']:focus {
-        background: bottom left linear-gradient(#0099cc, #0099cc) no-repeat, bottom center linear-gradient(#0099cc, #0099cc) repeat-x, bottom right linear-gradient(#0099cc, #0099cc) no-repeat;
-        background-size: 1px 6px, 1px 1px, 1px 6px; 
-      } 
-
-      input.holo.title {
-        font-size: 1.2em;
-      }
-
-      #create-button {
-        position: fixed;
-        bottom: 15px;
-        right: 15px;
-        background-image: url('add.png');
-        background-repeat: no-repeat;
-        background-position: center; 
-        background-color: #db4437;
-        height: 60px;
-        width: 60px;
-        border-radius: 30px;
-        box-shadow: 0 2px 1px 0 #bbb;
-      }
-
-    </style>
-    <link rel='stylesheet' type='text/css' href='reset.css' />
+    <link rel='stylesheet' type='text/css' href='style/reset.css' />
+    <link rel='stylesheet' type='text/css' href='style/style.css' />
     <meta name='viewport' content='width=device-width, user-scalable=no'>
-    <script type='text/javascript' src='jquery-2.1.0.js'></script>
-    <script type='text/javascript' src='underscore.js'></script>
-    <script type='text/javascript' src='backbone.js'></script>
-    <script type='text/javascript' src='backbone.localStorage.js'></script>
-
     <script type='text/template' id='divider-template'>
       <div class='divider-text'>
         <%= text %>
       </div>
     </script>
-
     <script type='text/template' id='card-template'>
       <div class='card-container'>
         <div class='card'>
@@ -203,7 +31,6 @@
         </div>
       </div>
     </script>
-
     <script type='text/template' id='edit-card-template'>
       <div class='card-container'>
         <div class='card'>
@@ -246,27 +73,22 @@
         </div>
       </div>
     </script>
-
   </head>
   <body>
-
-
-
-
     <div id='header'>
-      Aspire
+      <h1>Aspire</h1>
+      <div id='create-button'></div>
     </div>
-
     <div id='create-section'></div>
     <div id='cards'></div>
-
-    <div id='create-button'></div>
-
-    <audio hidden='true' id='win-audio'>
-      <source src='win.mp3' />  
-    </audio> 
-
-
+    <!-- <div id='create-button'></div> -->
+    <!-- <audio controls id='win-audio'>
+      <source src='assets/audio/win.mp3' type='audio/mpeg' />
+    </audio> -->
+    <script type='text/javascript' src='lib/jquery-2.1.0.js'></script>
+    <script type='text/javascript' src='lib/underscore.js'></script>
+    <script type='text/javascript' src='lib/backbone.js'></script>
+    <script type='text/javascript' src='lib/backbone.chromeStorage.js'></script>
     <script src='app.js' type='text/javascript'></script>
   </body>
 </html>

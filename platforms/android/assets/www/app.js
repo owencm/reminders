@@ -1,4 +1,10 @@
+chrome.notifications.create('', {type: 'basic', title: 'My Title', message: 'My Message', iconUrl: 'assets/icons/icon.png'}, function () {});
+
 // Misc helper functions 
+
+if ( typeof(Media) !== "undefined" && Media !== null ) {
+  var winAudio = new Media('/android_asset/www/assets/audio/win.mp3');
+}
 
 var lastDoneDaysToOptionValue = function (lastDone) {
   var value;
@@ -40,7 +46,7 @@ var templates = {
     var lastDoneDays = lastDoneDaysToOptionValue(timeStampToDaysAgo(attr.lastDone));
     var targetFrequency = attr.targetFrequency;
 
-    return template({title: attr.title, lastDone: lastDoneDays, targetFrequency: targetFrequency, primaryActionText: 'Done', primaryActionClass: 'save', hasSecondaryAction: true, secondaryActionText: 'Remove', secondaryActionClass: 'remove'});
+    return template({title: attr.title, lastDone: lastDoneDays, targetFrequency: targetFrequency, primaryActionText: 'Save changes', primaryActionClass: 'save', hasSecondaryAction: true, secondaryActionText: 'Remove', secondaryActionClass: 'remove'});
   },
 
   actionView: function (attr) {
@@ -114,7 +120,7 @@ var ActionCollection = Backbone.Collection.extend({
     // this.bind('', this.refreshActive, this);
   },
   model: Action,
-  localStorage: new Backbone.LocalStorage('ActionCollection'), 
+  chromeStorage: new Backbone.ChromeStorage('ActionCollection'), 
   comparator: function(a,b) {
     return a.score() > b.score() ?  -1
          : a.score() < b.score() ?  1
@@ -139,17 +145,21 @@ ActionListView = Backbone.View.extend({
     this.render();
   },
   render: function (event) {
-
-    // Display 'this week' divider
-    var dividerElem = document.createElement('div');
-    dividerElem.innerHTML = templates.dividerView({text: 'This week'});
-    document.querySelector('#cards').appendChild(dividerElem);
-
-    var shownDivider = false;
+    var activeDividerShown = false
+    var inactiveDividerShown = false;
     _.each(this.model.models, function (action) {
-      if (action.score() < 0.9 && !shownDivider) {
-        shownDivider = true;
-        // Display 'this week' divider
+
+      // Display the active divider
+      if (action.score() > 0.9 && !activeDividerShown) {
+        activeDividerShown = true;
+        var dividerElem = document.createElement('div');
+        dividerElem.innerHTML = templates.dividerView({text: 'This week'});
+        document.querySelector('#cards').appendChild(dividerElem);
+      }
+
+      // Display 'this week' divider
+      if (action.score() < 0.9 && !inactiveDividerShown) {
+        inactiveDividerShown = true;
         var dividerElem = document.createElement('div');
         dividerElem.innerHTML = templates.dividerView({text: 'Later'});
         document.querySelector('#cards').appendChild(dividerElem);
@@ -192,7 +202,8 @@ var ViewActionView = Backbone.View.extend({
 
   markDone: function () {
     this.model.done();
-    document.querySelector('#win-audio').play();
+    // Audio using cordova plugin
+    winAudio.play();
   },
 
   edit: function () {
@@ -256,11 +267,16 @@ var CreateActionView = Backbone.View.extend({
     var title = titleElement.value;
     var lastDone = parseInt(lastDoneElem.options[lastDoneElem.selectedIndex].value);
     var targetFrequency = parseInt(targetFrequencyElem.options[targetFrequencyElem.selectedIndex].value);
-    var a = new Action({title: title, targetFrequency: targetFrequency});
-    actionCollection.create(a);
-    // Find a way to add this earlier so we don't have to rerender. We can't stick it above because a model must be added to a collection before saving
-    a.setLastDoneNDaysAgo(lastDone);
-    setCreateMode(false);
+    // Don't create a new entry if titles are empty. TODO: Refactor this to use backbone's validate function.
+    if (title != '' && title != ' ') {
+      var a = new Action({title: title, targetFrequency: targetFrequency});
+      actionCollection.create(a);
+      // Find a way to add this earlier so we don't have to rerender. We can't stick it above because a model must be added to a collection before saving
+      a.setLastDoneNDaysAgo(lastDone);
+      setCreateMode(false);
+    } else {
+      setCreateMode(false);
+    }
   },
 
   show: function () {

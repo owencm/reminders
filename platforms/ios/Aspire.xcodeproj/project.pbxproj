@@ -53,6 +53,8 @@
 		E8DEB5B71A8D4B8681B6E7B4 /* ChromeBootstrap.m in Sources */ = {isa = PBXBuildFile; fileRef = D0EC76433B42444698DD17BA /* ChromeBootstrap.m */; };
 		2E5EF3CC72974128A5DB6C1F /* ChromeExtensionURLs.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE1695EDBD94DA98206D147 /* ChromeExtensionURLs.m */; };
 		574C6A34D0864E10B6EBC45D /* ChromeI18n.m in Sources */ = {isa = PBXBuildFile; fileRef = FDE8C1BD65834E249FF2B323 /* ChromeI18n.m */; };
+		EE48EBB2329F4947A0761836 /* CDVSound.m in Sources */ = {isa = PBXBuildFile; fileRef = EBD545B7722844139FEF7FF0 /* CDVSound.m */; };
+		B0F63EABBBAD4D8F91DE50D9 /* ChromeNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EA45DD11B740F8B7E1C5D5 /* ChromeNotifications.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,6 +145,10 @@
 		3CE1695EDBD94DA98206D147 /* ChromeExtensionURLs.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "ChromeExtensionURLs.m"; path = "org.chromium.bootstrap/ChromeExtensionURLs.m"; sourceTree = "<group>"; fileEncoding = 4; };
 		FDE8C1BD65834E249FF2B323 /* ChromeI18n.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "ChromeI18n.m"; path = "org.chromium.i18n/ChromeI18n.m"; sourceTree = "<group>"; fileEncoding = 4; };
 		36D5EAC68D554E1193FBC953 /* ChromeI18n.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ChromeI18n.h"; path = "org.chromium.i18n/ChromeI18n.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		EBD545B7722844139FEF7FF0 /* CDVSound.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVSound.m"; path = "org.apache.cordova.media/CDVSound.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		1AE8DB81C2C44F1A87EBF938 /* CDVSound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVSound.h"; path = "org.apache.cordova.media/CDVSound.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		99EA45DD11B740F8B7E1C5D5 /* ChromeNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "ChromeNotifications.m"; path = "org.chromium.notifications/ChromeNotifications.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		D587B6F6F9044D0EAACA6C84 /* ChromeNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "ChromeNotifications.h"; path = "org.chromium.notifications/ChromeNotifications.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -290,6 +296,10 @@
 				3CE1695EDBD94DA98206D147 /* ChromeExtensionURLs.m */,
 				FDE8C1BD65834E249FF2B323 /* ChromeI18n.m */,
 				36D5EAC68D554E1193FBC953 /* ChromeI18n.h */,
+				EBD545B7722844139FEF7FF0 /* CDVSound.m */,
+				1AE8DB81C2C44F1A87EBF938 /* CDVSound.h */,
+				99EA45DD11B740F8B7E1C5D5 /* ChromeNotifications.m */,
+				D587B6F6F9044D0EAACA6C84 /* ChromeNotifications.h */,
 			);
 			name = Plugins;
 			path = "Aspire/Plugins";
@@ -498,6 +508,8 @@
 				E8DEB5B71A8D4B8681B6E7B4 /* ChromeBootstrap.m in Sources */,
 				2E5EF3CC72974128A5DB6C1F /* ChromeExtensionURLs.m in Sources */,
 				574C6A34D0864E10B6EBC45D /* ChromeI18n.m in Sources */,
+				EE48EBB2329F4947A0761836 /* CDVSound.m in Sources */,
+				B0F63EABBBAD4D8F91DE50D9 /* ChromeNotifications.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

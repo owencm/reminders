@@ -6,10 +6,10 @@
   "version": "0.1.1",
   "offline_enabled": true,
   "icons": {
-    "36": "assets/icon.png",
-    "48": "assets/icon.png",
-    "78": "assets/icon.png",
-    "96": "assets/icon.png"
+    "36": "assets/icons/icon.png",
+    "48": "assets/icons/icon.png",
+    "78": "assets/icons/icon.png",
+    "96": "assets/icons/icon.png"
   },
   "app": {
     "background": {
@@ -17,6 +17,8 @@
     }
   },
   "permissions": [
-    "<all_urls>"
+    "<all_urls>",
+    "storage",
+    "notifications"
   ]
 }
