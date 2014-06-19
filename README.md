@@ -1,4 +1,4 @@
-reminders
+A simple reminders app
 =========
 
-A mobile web app with offline support to help make you a better person
+A mobile web app built with Backbone and the MobileChromeApps framework (Cordova based) with offline support.
